@@ -100,8 +100,12 @@ def searchSongs(query):
 
 def getPlayList(listId):
     songs_json = []
+    headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36',
+    'cache-control': 'private, max-age=0, no-cache'
+    }
     response = requests.get(
-        'https://www.jiosaavn.com/api.php?listid={0}&_format=json&__call=playlist.getDetails'.format(listId), verify=False)
+        'https://www.jiosaavn.com/api.php?listid={0}&_format=json&__call=playlist.getDetails'.format(listId), verify=False, headers=headers)
     if response.status_code == 200:
         songs_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
         songs_json = json.loads(songs_json)
