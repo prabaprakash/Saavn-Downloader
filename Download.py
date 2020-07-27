@@ -23,16 +23,19 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 unicode = str
 raw_input = input
 
+
 def getLibrary():
     url = "https://www.jiosaavn.com/api.php?__call=user.login&_marker=0"
     username = input("Enter your email for jiosaavn: ").strip()
     password = input("Enter your password for jiosaavn: ").strip()
-    payload = { "username": username, "password": password }
+    payload = {"username": username, "password": password}
     session = requests.Session()
     session.post(url, data=payload)
-    response = session.get("https://www.jiosaavn.com/api.php?_format=json&__call=library.getAll")
+    response = session.get(
+        "https://www.jiosaavn.com/api.php?_format=json&__call=library.getAll")
     # library_json has ['song', 'show', 'artist', 'album', 'playlist', 'user'] as keys all of which have the id's as their value
-    library_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
+    library_json = [x for x in response.text.splitlines()
+                    if x.strip().startswith('{')][0]
     library_json = json.loads(library_json)
     return library_json
 
@@ -55,7 +58,8 @@ def addtags(filename, json_data, playlist_name):
     #    audio['rtng'] = [(str(4))]
     cover_url = json_data['image'][:-11] + '500x500.jpg'
     fd = urllib.request.urlopen(cover_url)
-    cover = MP4Cover(fd.read(), getattr(MP4Cover, 'FORMAT_PNG' if cover_url.endswith('png') else 'FORMAT_JPEG'))
+    cover = MP4Cover(fd.read(), getattr(
+        MP4Cover, 'FORMAT_PNG' if cover_url.endswith('png') else 'FORMAT_JPEG'))
     fd.close()
     audio['covr'] = [cover]
     audio.save()
@@ -101,28 +105,31 @@ def searchSongs(query):
 def getPlayList(listId):
     songs_json = []
     headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36',
-    'cache-control': 'private, max-age=0, no-cache'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36',
+        'cache-control': 'private, max-age=0, no-cache'
     }
     response = requests.get(
         'https://www.jiosaavn.com/api.php?listid={0}&_format=json&__call=playlist.getDetails'.format(listId), verify=False, headers=headers)
     if response.status_code == 200:
-        songs_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
+        songs_json = [x for x in response.text.splitlines()
+                      if x.strip().startswith('{')][0]
         songs_json = json.loads(songs_json)
     return songs_json
 
 
 def getAlbum(albumId):
-   songs_json = []
-   response = requests.get(
-       'https://www.jiosaavn.com/api.php?_format=json&__call=content.getAlbumDetails&albumid={0}'.format(albumId),
-       verify=False)
-   if response.status_code == 200:
-       songs_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
-       songs_json = json.loads(songs_json)
-       print("Album name: ",songs_json["name"])
-       album_name=songs_json["name"]
-   return songs_json, album_name
+    songs_json = []
+    response = requests.get(
+        'https://www.jiosaavn.com/api.php?_format=json&__call=content.getAlbumDetails&albumid={0}'.format(
+            albumId),
+        verify=False)
+    if response.status_code == 200:
+        songs_json = [x for x in response.text.splitlines()
+                      if x.strip().startswith('{')][0]
+        songs_json = json.loads(songs_json)
+        print("Album name: ", songs_json["name"])
+        album_name = songs_json["name"]
+    return songs_json, album_name
 
 
 def getArtistAlbumsIDs(artistId, artist_json):
@@ -138,9 +145,11 @@ def getArtistAlbumsIDs(artistId, artist_json):
         print('Total requests: {}'.format(total_requests))
         for n_album_page in range(total_requests):
             print('Getting Album page: {0}'.format(n_album_page))
-            url = 'https://www.saavn.com/api.php?_marker=0&_format=json&__call=artist.getArtistPageDetails&artistId={0}&n_album=10&page={1}'.format(artistId, n_album_page)
+            url = 'https://www.saavn.com/api.php?_marker=0&_format=json&__call=artist.getArtistPageDetails&artistId={0}&n_album=10&page={1}'.format(
+                artistId, n_album_page)
             response = requests.get(url)
-            artist_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
+            artist_json = [x for x in response.text.splitlines()
+                           if x.strip().startswith('{')][0]
             artist_json = json.loads(artist_json)
             n_albums_in_page = len(artist_json['topAlbums']['albums'])
             for i in range(n_albums_in_page):
@@ -157,17 +166,22 @@ def getShow(showId):
     show_homepage_json = []
     show_json = {}
     response = requests.get(
-                'https://www.jiosaavn.com/api.php?_format=json&show_id={}&__call=show.getHomePage'.format(showId))
-    show_homepage_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
+        'https://www.jiosaavn.com/api.php?_format=json&show_id={}&__call=show.getHomePage'.format(showId))
+    show_homepage_json = [
+        x for x in response.text.splitlines() if x.strip().startswith('{')][0]
     show_homepage_json = json.loads(show_homepage_json)
     no_of_seasons = len(show_homepage_json['seasons'])
-    for season in range(no_of_seasons):   # Note that season value starts from 0 for the program but from 1 for the url
+    # Note that season value starts from 0 for the program but from 1 for the url
+    for season in range(no_of_seasons):
         no_of_episodes = show_homepage_json['seasons'][season]['more_info']['numEpisodes']
         response = requests.get(
             'https://www.jiosaavn.com/api.php?season_number={}&show_id={}&n={}&_format=json&__call=show.getAllEpisodes&sort_order=asc'.format(season+1, showId, no_of_episodes))
-        season_json = [x for x in response.text.splitlines() if x.strip().startswith('[')][0]
-        season_json = json.loads(season_json)  # A list containing all the episodes in the season
-        show_json[season] = season_json   # To build a dictionary containg all the season in the show
+        season_json = [x for x in response.text.splitlines()
+                       if x.strip().startswith('[')][0]
+        # A list containing all the episodes in the season
+        season_json = json.loads(season_json)
+        # To build a dictionary containg all the season in the show
+        show_json[season] = season_json
     return show_json
 
 
@@ -178,17 +192,20 @@ def addtagsShow(filename, json_data):
     try:
         audio['\xa9ART'] = ""
         for artist in json_data['more_info']['artistMap']['primary_artists']:
-            audio['\xa9ART'] = audio['\xa9ART'] + ', ' + html.unescape(unicode(artist['name']))
+            audio['\xa9ART'] = audio['\xa9ART'] + ', ' + \
+                html.unescape(unicode(artist['name']))
     except:
         pass
-    audio['\xa9alb'] = html.unescape(unicode(json_data['more_info']['show_title']))
+    audio['\xa9alb'] = html.unescape(
+        unicode(json_data['more_info']['show_title']))
     # audio['\xa9gen'] = html.unescape(unicode(playlist_name))
     audio['\xa9day'] = html.unescape(unicode(json_data['year']))
     audio['cprt'] = html.unescape(unicode(json_data['more_info']['label']))
 
     cover_url = json_data['image'][:-11] + '500x500.jpg'
     fd = urllib.request.urlopen(cover_url)
-    cover = MP4Cover(fd.read(), getattr(MP4Cover, 'FORMAT_PNG' if cover_url.endswith('png') else 'FORMAT_JPEG'))
+    cover = MP4Cover(fd.read(), getattr(
+        MP4Cover, 'FORMAT_PNG' if cover_url.endswith('png') else 'FORMAT_JPEG'))
     fd.close()
     audio['covr'] = [cover]
     audio.save()
@@ -203,8 +220,10 @@ def downloadShow(show_json):
         des_cipher = setDecipher()
         for episode in season_json:
             try:
-                enc_url = base64.b64decode(episode['more_info']['encrypted_media_url'].strip())
-                dec_url = des_cipher.decrypt(enc_url, padmode=PAD_PKCS5).decode('utf-8')
+                enc_url = base64.b64decode(
+                    episode['more_info']['encrypted_media_url'].strip())
+                dec_url = des_cipher.decrypt(
+                    enc_url, padmode=PAD_PKCS5).decode('utf-8')
                 # dec_url = dec_url.replace('_96.mp4', '_320.mp4')   # Change in url gives invalid xml
                 filename = html.unescape(episode['title']) + '.m4a'
                 filename = filename.replace("\"", "'")
@@ -217,10 +236,12 @@ def downloadShow(show_json):
             except Exception as e:
                 logger.error('Download Error' + str(e))
             try:
-                location = os.path.join(os.path.sep, os.getcwd(), show_name, season_name, filename)
+                location = os.path.join(
+                    os.path.sep, os.getcwd(), show_name, season_name, filename)
                 if os.path.isfile(location):
-                   print("Downloaded Show: {} - Season: {} - Episode: {}".format(show_name, season_name, filename))
-                else :
+                    print(
+                        "Downloaded Show: {} - Season: {} - Episode: {}".format(show_name, season_name, filename))
+                else:
                     print("Downloading Episode: {}".format(filename))
                     obj = SmartDL(dec_url, location)
                     obj.start()
@@ -230,7 +251,7 @@ def downloadShow(show_json):
                     # addtags(location, song, name)
                     print('\n')
             except Exception as e:
-                 logger.error('Download Error' + str(e))
+                logger.error('Download Error' + str(e))
 
 
 def downloadAllPlayList(library_json):
@@ -274,11 +295,14 @@ def downloadArtistAllSongs(artistId, artist_json):
         print('Total requests: {}'.format(total_requests))
         for n_song_page in range(total_requests):
             print('Getting Song page: {0}'.format(n_song_page))
-            url = 'https://www.saavn.com/api.php?_marker=0&_format=json&__call=artist.getArtistPageDetails&artistId={0}&n_song=10&page={1}'.format(artistId, n_song_page)
+            url = 'https://www.saavn.com/api.php?_marker=0&_format=json&__call=artist.getArtistPageDetails&artistId={0}&n_song=10&page={1}'.format(
+                artistId, n_song_page)
             response = requests.get(url)
-            artist_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
+            artist_json = [x for x in response.text.splitlines()
+                           if x.strip().startswith('{')][0]
             artist_json = json.loads(artist_json)
-            songs_json = artist_json['topSongs']   # A dict with key songs having at most 10 songs
+            # A dict with key songs having at most 10 songs
+            songs_json = artist_json['topSongs']
             downloadSongs(songs_json, artist_name=artist_name)
     except Exception as e:
         print(str(e))
@@ -314,8 +338,7 @@ def getHomePage():
 
 
 def downloadAlbum(albumId, artist_name=''):
-    print("Initiating Album Downloading")
-    json_data, album_nm=getAlbum(albumId)
+    json_data, album_nm = getAlbum(albumId)
     album_name = album_nm.replace("&quot;", "'")
     if artist_name:
         downloadSongs(json_data, album_name, artist_name=artist_name)
@@ -328,38 +351,41 @@ def downloadSongs(songs_json, album_name='songs', artist_name='Non-Artist'):
     for song in songs_json['songs']:
         try:
             enc_url = base64.b64decode(song['encrypted_media_url'].strip())
-            dec_url = des_cipher.decrypt(enc_url, padmode=PAD_PKCS5).decode('utf-8')
+            dec_url = des_cipher.decrypt(
+                enc_url, padmode=PAD_PKCS5).decode('utf-8')
             dec_url = dec_url.replace('_96.mp4', '_320.mp4')
             filename = html.unescape(song['song']) + '.m4a'
             filename = filename.replace("\"", "'")
-            filename = filename.replace(":", "-") 
-            filename = filename.replace("<", "-") 
-            filename = filename.replace(">", "-") 
-            filename = filename.replace("?", "-") 
-            filename = filename.replace("*", "-") 
+            filename = filename.replace(":", "-")
+            filename = filename.replace("<", "-")
+            filename = filename.replace(">", "-")
+            filename = filename.replace("?", "-")
+            filename = filename.replace("*", "-")
             filename = filename.replace("|", "-")
         except Exception as e:
             logger.error('Download Error' + str(e))
         try:
-            location = os.path.join(os.path.sep, os.getcwd(), artist_name, album_name, filename)
+            location = os.path.join(
+                os.path.sep, os.getcwd(), artist_name, album_name, filename)
             if os.path.isfile(location):
-               print("Downloaded %s" % filename)
-            else :
+                print("Downloaded %s" % filename)
+            else:
                 print("Downloading %s" % filename)
                 obj = SmartDL(dec_url, location)
                 obj.start()
                 try:
-                    name = songs_json['name'] if ('name' in songs_json) else songs_json['listname']
+                    name = songs_json['name'] if (
+                        'name' in songs_json) else songs_json['listname']
                 except:
                     name = ''
                 addtags(location, song, name)
                 print('\n')
         except Exception as e:
-             logger.error('Download Error' + str(e))
+            logger.error('Download Error' + str(e))
 
 
 if __name__ == '__main__':
-    album_name="songs"
+    album_name = "songs"
 
     if len(sys.argv) > 1 and sys.argv[1].lower() == "-p":
         downloadAllPlayList(getLibrary())
@@ -376,43 +402,36 @@ if __name__ == '__main__':
             numbers = [int(s) for s in string.split('"') if s.isdigit()]
             artistId = numbers[0]
 
-            url = 'https://www.jiosaavn.com/api.php?_marker=0&_format=json&__call=artist.getArtistPageDetails&artistId={0}'.format(artistId)
+            url = 'https://www.jiosaavn.com/api.php?_marker=0&_format=json&__call=artist.getArtistPageDetails&artistId={0}'.format(
+                artistId)
             response = requests.get(url)
-            artist_json = [x for x in response.text.splitlines() if x.strip().startswith('{')][0]
+            artist_json = [x for x in response.text.splitlines()
+                           if x.strip().startswith('{')][0]
             artist_json = json.loads(artist_json)
         except Exception as e:
             print(str(e))
             print('Please check that the entered URL links to an Artist')
         if sys.argv[2].lower() == '--album':
             print('Downloading all artist albums')
-            album_IDs_artist, artist_name = getArtistAlbumsIDs(artistId, artist_json)
+            album_IDs_artist, artist_name = getArtistAlbumsIDs(
+                artistId, artist_json)
             downloadArtistAllAlbums(album_IDs_artist, artist_name)
         elif sys.argv[2].lower() == '--song':
             print('Downloading all artist songs')
             downloadArtistAllSongs(artistId, artist_json)
     else:
-        input_url = input('Enter the url: ').strip()
+        input_url = input('Enter album/playlist url: ').strip()
         try:
             proxies, headers = setProxy()
             res = requests.get(input_url, proxies=proxies, headers=headers)
-        except Exception as e:
-            logger.error('Error accessing website error: ' + e)
-
-        soup = BeautifulSoup(res.text, "lxml")
-
-        try:
-            getPlayListID = soup.find_all("script")[40].string[1743:][:8]
-            if getPlayListID is not None:
-                print("Downloading Playlist")
-                downloadSongs(getPlayList(getPlayListID))
-                sys.exit()
-        except Exception as e:
-            print('...')
-        try:
-            getAlbumID = soup.find_all("script")[40].string[687:][:8]
-            if getAlbumID is not None:
+            soup = BeautifulSoup(res.text, "lxml")
+            playlist_id = soup.find_all("script")[40].string[1743:][:8]
+            album_id = soup.find_all("script")[40].string[687:][:8]
+            if re.search("album", input_url):
                 print("Downloading Album")
-                downloadAlbum(getAlbumID)
-                
+                downloadAlbum(album_id)
+            else:
+                print("Downloading Playlist")
+                downloadSongs(getPlayList(playlist_id))
         except Exception as e:
-            print("Please paste link of album or playlist")
+            print("Please paste album/playlist url")
