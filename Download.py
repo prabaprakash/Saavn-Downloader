@@ -403,31 +403,16 @@ if __name__ == '__main__':
         try:
             getPlayListID = soup.find_all("script")[40].string[1743:][:8]
             if getPlayListID is not None:
-                print("Initiating PlayList Downloading")
+                print("Downloading Playlist")
                 downloadSongs(getPlayList(getPlayListID))
                 sys.exit()
         except Exception as e:
             print('...')
         try:
-            getAlbumID = soup.select(".play")[0]["onclick"]
-            getAlbumID = ast.literal_eval(re.search("\[(.*?)\]", getAlbumID).group())[1]
+            getAlbumID = soup.find_all("script")[40].string[687:][:8]
             if getAlbumID is not None:
+                print("Downloading Album")
                 downloadAlbum(getAlbumID)
                 
         except Exception as e:
-            print('...')
             print("Please paste link of album or playlist")
-
-# getSongID = soup.select(".current-song")[0]["data-songid"]
-# if getSongID is not None:
-#    print(getPlayListID)
-#    sys.exit()
-# for playlist in getHomePage():
-#     print(playlist)
-#     id = raw_input()
-#     if id is "1":
-#       downloadSongs(getPlayList(playlist['listid']))
-# queryresults = searchSongs('nannare')
-# print(json.dumps(getSong(queryresults['topQuery_json'][0]['id']), indent=2))
-# response = requests.head(dec_url)
-# if os.path.isfile(location) if (os.stat(location).st_size >  int(response.headers["Content-Length"])) else False:
