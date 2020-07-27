@@ -401,7 +401,7 @@ if __name__ == '__main__':
         soup = BeautifulSoup(res.text, "lxml")
 
         try:
-            getPlayListID = soup.select(".flip-layout")[0]["data-listid"]
+            getPlayListID = soup.find_all("script")[40].string[1743:][:8]
             if getPlayListID is not None:
                 print("Initiating PlayList Downloading")
                 downloadSongs(getPlayList(getPlayListID))
