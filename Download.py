@@ -67,14 +67,15 @@ def addtags(filename, json_data, playlist_name):
 
 def setProxy():
     proxy_ip = ''
-    if ('http_proxy' in os.environ):
-        proxy_ip = os.environ['http_proxy']
+    if ('proxy' in os.environ):
+        proxy_ip = os.environ['proxy']
     proxies = {
         'http': proxy_ip,
         'https': proxy_ip,
     }
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36',
+        'cache-control': 'private, max-age=0, no-cache'
     }
     return proxies, headers
 
@@ -103,13 +104,12 @@ def searchSongs(query):
 
 
 def getPlayList(listId):
+    proxies, headers = setProxy()
     songs_json = []
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36',
-        'cache-control': 'private, max-age=0, no-cache'
-    }
     response = requests.get(
-        'https://www.jiosaavn.com/api.php?listid={0}&_format=json&__call=playlist.getDetails'.format(listId), verify=False, headers=headers)
+        'https://www.jiosaavn.com/api.php?listid={0}&_format=json&__call=playlist.getDetails'.format(
+            listId),
+        verify=False, proxies=proxies, headers=headers)
     if response.status_code == 200:
         songs_json = [x for x in response.text.splitlines()
                       if x.strip().startswith('{')][0]
@@ -118,11 +118,12 @@ def getPlayList(listId):
 
 
 def getAlbum(albumId):
+    proxies, headers = setProxy()
     songs_json = []
     response = requests.get(
         'https://www.jiosaavn.com/api.php?_format=json&__call=content.getAlbumDetails&albumid={0}'.format(
             albumId),
-        verify=False)
+        verify=False, proxies=proxies, headers=headers)
     if response.status_code == 200:
         songs_json = [x for x in response.text.splitlines()
                       if x.strip().startswith('{')][0]
