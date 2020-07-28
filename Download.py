@@ -234,7 +234,7 @@ def downloadShow(show_json):
                 filename = filename.replace("*", "-")
                 filename = filename.replace("|", "-")
             except Exception as e:
-                logger.error('Download Error' + str(e))
+                print('Download Error' + str(e))
             try:
                 location = os.path.join(
                     os.path.sep, os.getcwd(), show_name, season_name, filename)
@@ -251,7 +251,7 @@ def downloadShow(show_json):
                     # addtags(location, song, name)
                     print('\n')
             except Exception as e:
-                logger.error('Download Error' + str(e))
+                print('Download Error' + str(e))
 
 
 def downloadAllPlayList(library_json):
@@ -340,6 +340,7 @@ def getHomePage():
 def downloadAlbum(albumId, artist_name=''):
     json_data, album_nm = getAlbum(albumId)
     album_name = album_nm.replace("&quot;", "'")
+    album_name = album_nm.replace("?", "")
     if artist_name:
         downloadSongs(json_data, album_name, artist_name=artist_name)
     else:
@@ -363,7 +364,7 @@ def downloadSongs(songs_json, album_name='songs', artist_name='Non-Artist'):
             filename = filename.replace("*", "-")
             filename = filename.replace("|", "-")
         except Exception as e:
-            logger.error('Download Error' + str(e))
+            print('Download Error' + str(e))
         try:
             location = os.path.join(
                 os.path.sep, os.getcwd(), artist_name, album_name, filename)
@@ -381,7 +382,7 @@ def downloadSongs(songs_json, album_name='songs', artist_name='Non-Artist'):
                 addtags(location, song, name)
                 print('\n')
         except Exception as e:
-            logger.error('Download Error' + str(e))
+            print('Download Error' + str(e))
 
 
 if __name__ == '__main__':
@@ -429,11 +430,11 @@ if __name__ == '__main__':
             album_id = soup.find_all("script")[40].string[687:][:12]
             if re.search("album", input_url):
                 print("Downloading Album")
-                album_id = ''.join([s for s in album_id if s.isdigit()]) 
+                album_id = ''.join([s for s in album_id if s.isdigit()])
                 downloadAlbum(album_id)
             else:
                 print("Downloading Playlist")
-                playlist_id = ''.join([s for s in playlist_id if s.isdigit()]) 
+                playlist_id = ''.join([s for s in playlist_id if s.isdigit()])
                 downloadSongs(getPlayList(playlist_id))
         except Exception as e:
             print("Please paste album/playlist url")
