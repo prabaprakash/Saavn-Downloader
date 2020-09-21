@@ -427,8 +427,8 @@ if __name__ == '__main__':
             proxies, headers = setProxy()
             res = requests.get(input_url, proxies=proxies, headers=headers)
             soup = BeautifulSoup(res.text, "lxml")
-            playlist_id = soup.find_all("script")[42].string[1969:][:12]
-            album_id = soup.find_all("script")[42].string[687:][:12]
+            playlist_id = soup.find_all("script")[39].string[1969:][:12]
+            album_id = soup.find_all("script")[39].string[687:][:12]
             if re.search("album", input_url):
                 print("Downloading Album")
                 album_id = ''.join([s for s in album_id if s.isdigit()])
