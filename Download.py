@@ -423,19 +423,25 @@ if __name__ == '__main__':
             downloadArtistAllSongs(artistId, artist_json)
     else:
         input_url = input('Enter album/playlist url: ').strip()
+        proxies, headers = setProxy()
         try:
-            proxies, headers = setProxy()
-            res = requests.get(input_url, proxies=proxies, headers=headers)
-            soup = BeautifulSoup(res.text, "lxml")
-            playlist_id = soup.find_all("script")[39].string[1969:][:12]
-            album_id = soup.find_all("script")[39].string[687:][:12]
             if re.search("album", input_url):
+                album_hash = input_url.split("/")[-1]
+                url = "https://www.jiosaavn.com/api.php?__call=webapi.get&token={0}&type=album&p=1&n=20&includeMetaTags=0&ctx=wap6dot0&api_version=4&_format=json&_marker=0".format(album_hash)
+                res = requests.get(url, proxies=proxies, headers=headers)
+                album_json = [x for x in res.text.splitlines()
+                           if x.strip().startswith('{')][0]
+                album_json = json.loads(album_json)
                 print("Downloading Album")
-                album_id = ''.join([s for s in album_id if s.isdigit()])
-                downloadAlbum(album_id)
+                downloadAlbum(album_json["id"])
             else:
                 print("Downloading Playlist")
-                playlist_id = ''.join([s for s in playlist_id if s.isdigit()])
-                downloadSongs(getPlayList(playlist_id))
+                playlist_hash = input_url.split("/")[-1]
+                url = "https://www.jiosaavn.com/api.php?__call=webapi.get&token={0}&type=playlist&p=1&n=20&includeMetaTags=0&ctx=wap6dot0&api_version=4&_format=json&_marker=0".format(playlist_hash)
+                res = requests.get(url, proxies=proxies, headers=headers)
+                playlist_json = [x for x in res.text.splitlines()
+                           if x.strip().startswith('{')][0]
+                playlist_json = json.loads(playlist_json)
+                downloadSongs(getPlayList(playlist_json["id"]))
         except Exception as e:
             print("Please paste album/playlist url")
