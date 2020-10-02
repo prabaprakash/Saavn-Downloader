@@ -7,7 +7,7 @@ The fullset of funcitonality offered by this is:
   - Download Album
   - Download Entire PlayList from user profile
   - Download Entire Albums from user profile
-  - Download Entire JioSaavn Originals and Podcasts in the user profile
+  - Download Entire JioSaavn Originals and Podcasts in the user profile without any subscription.
  
 
 ### Installation
