@@ -11,15 +11,16 @@ The fullset of funcitonality offered by this is:
  
 
 ### Installation
-```sh
-$ pip3 install -r requirements.txt
+```
+$ pip install poetry
+$ poetry install
 ```
 
 ### Usage
 
 ##### Download Playlist or Album from Web URL
 ```
-$ python3 Download.py
+$ poetry run python run.py
 $ Paste the URL: https://www.jiosaavn.com/album/tum-hi-aana-from-marjaavaan/j9bfphC2728_
 ```
 
@@ -32,34 +33,34 @@ $ Paste the URL: https://www.jiosaavn.com/album/tum-hi-aana-from-marjaavaan/j9bf
 
 #### Download All Albums of an Artist
 ```
-$ python Download.py -artist --album
+$ poetry run python run.py -artist --album
 $ Paste the URL of Artist Profile: https://www.jiosaavn.com/artist/babbal-rai-albums/pRd5ZTGrLv8_
 ``` 
 
 #### Download All Songs of an Artist
 ```
-$ python Download.py -artist --song
+$ poetry run python run.py -artist --song
 $ Paste the URL of Artist Profile: https://www.jiosaavn.com/artist/babbal-rai-albums/pRd5ZTGrLv8_
 ```
 
 
 #### Download All Playlist from your profile
 ```
-$ python3 Download.py -p
+$ poetry run python run.py -p
 $ Enter your Email: your_saavn_email
 $ Enter your Password: your_saavn_password
 ```
 
 #### Download All Albums from your profile
 ```
-$ python3 Download.py -a
+$ poetry run python run.py -a
 $ Enter your Email: your_saavn_email
 $ Enter your Password: your_saavn_password
 ```
 
 #### Download All JioSaavn Originals or Podcast Shows from your profile
 ```
-$ python3 Download.py -s
+$ poetry run python run.py -s
 $ Enter your Email: your_saavn_email
 $ Enter your Password: your_saavn_password
 ```
