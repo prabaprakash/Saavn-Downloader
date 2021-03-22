@@ -1,4 +1,3 @@
-import ast
 import base64
 import html
 import json
@@ -7,7 +6,6 @@ import re
 import urllib.request
 import sys
 
-import logger
 import requests
 import urllib3.request
 from bs4 import BeautifulSoup
@@ -15,7 +13,7 @@ from mutagen.mp4 import MP4, MP4Cover
 from pySmartDL import SmartDL
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-from pyDes import *
+from downloader.pyDes import *
 
 # Pre Configurations
 urllib3.disable_warnings()
@@ -386,8 +384,7 @@ def downloadSongs(songs_json, album_name='songs', artist_name='Non-Artist'):
             print('Download Error' + str(e))
 
 
-if __name__ == '__main__':
-    album_name = "songs"
+def main():
 
     if len(sys.argv) > 1 and sys.argv[1].lower() == "-p":
         downloadAllPlayList(getLibrary())

@@ -1,0 +1,18 @@
+[tool]
+[tool.poetry]
+name = "Saavn-Downloader"
+version = "1.0"
+description = "Saavn Downloader"
+authors = ["prabaprakash", "others"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+beautifulsoup4 = "*"
+eyed3 = "*"
+lxml = "*"
+mutagen = "*"
+pathlib = "*"
+pysmartdl = "*"
+requests = "*"
+urllib3 = "*"
+pytest = "^6.2.2"
